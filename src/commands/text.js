@@ -170,12 +170,17 @@ var TextBlock = P(Node, function(_, super_) {
   function fuseChildren(self) {
     self.jQ[0].normalize();
 
-    var textPcDom = self.jQ[0].firstChild;
-    var textPc = TextPiece(textPcDom.data);
-    textPc.jQadd(textPcDom);
+    try {
+      var textPcDom = self.jQ[0].firstChild;
+      var textPc = TextPiece(textPcDom.data);
+      textPc.jQadd(textPcDom);
 
-    self.children().disown();
-    return textPc.adopt(self, 0, 0);
+      self.children().disown();
+      return textPc.adopt(self, 0, 0);
+    } catch(e) {
+      console.error('IA caught fuseChildren exception' +e);
+      return;
+    }
   }
 
   _.focus = MathBlock.prototype.focus;
@@ -236,7 +241,7 @@ var TextPiece = P(Node, function(_, super_) {
   _.latex = function() { return this.text; };
 
   _.deleteTowards = function(dir, cursor) {
-    if (this.text.length > 1) {
+    if (this.text !== undefined && this.text.length > 1) {
       if (dir === R) {
         this.dom.deleteData(0, 1);
         this.text = this.text.slice(1);
@@ -249,9 +254,14 @@ var TextPiece = P(Node, function(_, super_) {
       }
     }
     else {
-      this.remove();
-      this.jQ.remove();
-      cursor[dir] = this[dir];
+      try {
+        this.remove();
+        this.jQ.remove();
+        cursor[dir] = this[dir];  
+      } catch (e) {
+        log.error('IA caught deleteTowards exception' +e);
+      }
+      
     }
   };
 
@@ -283,7 +293,7 @@ var TextPiece = P(Node, function(_, super_) {
   };
 });
 
-CharCmds.$ =
+// CharCmds.$ =
 LatexCmds.text =
 LatexCmds.textnormal =
 LatexCmds.textrm =
