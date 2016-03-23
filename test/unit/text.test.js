@@ -29,7 +29,7 @@ suite('text', function() {
 
   test('changes the text nodes as the cursor moves around', function() {
     var block = fromLatex('\\text{abc}');
-    var ctrlr = Controller({ __options: 0 }, block);
+    var ctrlr = Controller(block, 0, 0);
     var cursor = ctrlr.cursor.insAtRightEnd(block);
 
     ctrlr.moveLeft();
@@ -52,5 +52,17 @@ suite('text', function() {
 
     ctrlr.moveRight();
     assertSplit(cursor.jQ, 'abc', null);
+  });
+
+  test('does not change latex as the cursor moves around', function() {
+    var block = fromLatex('\\text{x}');
+    var ctrlr = Controller(block, 0, 0);
+    var cursor = ctrlr.cursor.insAtRightEnd(block);
+
+    ctrlr.moveLeft();
+    ctrlr.moveLeft();
+    ctrlr.moveLeft();
+
+    assert.equal(block.latex(), '\\text{x}');
   });
 });

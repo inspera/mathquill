@@ -172,9 +172,13 @@ var TextBlock = P(Node, function(_, super_) {
 
     try {
       var textPcDom = self.jQ[0].firstChild;
+      pray('only node in TextBlock span is Text node', textPcDom.nodeType === 3);
+      // nodeType === 3 has meant a Text node since ancient times:
+      //   http://reference.sitepoint.com/javascript/Node/nodeType
+  
       var textPc = TextPiece(textPcDom.data);
       textPc.jQadd(textPcDom);
-
+  
       self.children().disown();
       return textPc.adopt(self, 0, 0);
     } catch(e) {
@@ -241,7 +245,7 @@ var TextPiece = P(Node, function(_, super_) {
   _.latex = function() { return this.text; };
 
   _.deleteTowards = function(dir, cursor) {
-    if (this.text !== undefined && this.text.length > 1) {
+    if (this.text.length > 1) {
       if (dir === R) {
         this.dom.deleteData(0, 1);
         this.text = this.text.slice(1);
@@ -254,14 +258,9 @@ var TextPiece = P(Node, function(_, super_) {
       }
     }
     else {
-      try {
-        this.remove();
-        this.jQ.remove();
-        cursor[dir] = this[dir];  
-      } catch (e) {
-        log.error('IA caught deleteTowards exception' +e);
-      }
-      
+      this.remove();
+      this.jQ.remove();
+      cursor[dir] = this[dir];
     }
   };
 
@@ -293,7 +292,7 @@ var TextPiece = P(Node, function(_, super_) {
   };
 });
 
-// CharCmds.$ =
+CharCmds.$ =
 LatexCmds.text =
 LatexCmds.textnormal =
 LatexCmds.textrm =
