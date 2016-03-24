@@ -169,6 +169,7 @@ var TextBlock = P(Node, function(_, super_) {
 
   function fuseChildren(self) {
     self.jQ[0].normalize();
+    
     try {
       var textPcDom = self.jQ[0].firstChild;
       pray('only node in TextBlock span is Text node', textPcDom.nodeType === 3);
